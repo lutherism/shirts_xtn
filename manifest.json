@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Click Shirt",
+  "description": "Buy shirts a shirt printed with any image on the internet. With one click",
+  "version": "0.0.1",
+
+  "browser_action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+		"<all_urls>"
+  ],
+
+  "optional_permissions": [ "<all_urls>", "https://api.scalablepress.com/v2" ],
+  "sandbox": {
+     "pages": ["index.html"]
+  }
+}
+    
