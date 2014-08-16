@@ -35,7 +35,7 @@
 	});
 
 	var Product =  BaseModel.extend({
-		idAttribute: 'productId',
+		idAttribute: 'id',
 		defaults: {
 			comments: "",
 			description: "",
@@ -57,9 +57,9 @@
 				}
 			},
 			value: {
-				deps: ['productId'],
+				deps: ['id'],
 				get: function() {
-					return this.get('productId');
+					return this.get('id');
 				}
 			}
 		},
