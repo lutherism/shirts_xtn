@@ -71,6 +71,7 @@ var PillView = BaseView.extend({
 });
 var PillListView = BaseView.extend({
 	itemView: PillView,
+	className:"nav nav-pills",
 	render: function() {
 		this.$el.html(templates.PillList());
 		PillListView.__super__.render.apply(this);
@@ -200,7 +201,6 @@ var App = BaseView.extend({
 	gotProducts: function() {
 		this.products.reset(this.catSelection.get('products'));
 		this.products.trigger('update');
-		this.productDropDown.render();
 		this.imageArray.render();
 	},
 

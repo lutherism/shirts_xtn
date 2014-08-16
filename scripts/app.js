@@ -9,11 +9,6 @@ var app = new App({
 	shipping: ourShipping
 });
 
-catagoryFull.fetch({
-	success: function() {
-		app.render();
-	}
-});
 app.render()
 
 })();

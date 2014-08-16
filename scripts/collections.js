@@ -7,6 +7,7 @@
 	})
 	var Catagories = BaseCollection.extend({
 		model: Category,
+		comparator: 'family',
 
 		url: function() {
 			return globalApi + "/categories"

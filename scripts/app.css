@@ -17,3 +17,7 @@ body {
 	padding:10 0;
 	overflow:scroll;
 }
+.nav a {
+	margin: 5 5 !important;
+	padding: 5 10 !important;
+}
