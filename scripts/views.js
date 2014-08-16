@@ -162,8 +162,7 @@ var App = BaseView.extend({
 
 	render: function() {
 		this.$el.html(templates.App());
-		this.$catagorySelect = this.$el.find('.category-drop-down');
-		this.$productSelect = this.$el.find('.product-drop-down');
+		this.$catagorySelect = this.$el.find('.category-pills');
 		this.$addressForm = this.$el.find('.address-form');
 		this.$images = this.$el.find('.image-container');
 		this.buildSubviews();
@@ -177,17 +176,6 @@ var App = BaseView.extend({
 		});
 		this.categoryDropDown.render();
 
-		this.productDropDown = new dropDown({
-			collection: this.products,
-			defaultOption: {
-				label: "Select a Product",
-				value: ""
-			},
-			titleLabel: "Products",
-			el: this.$productSelect
-		});
-		this.productDropDown.render();
-
 		this.addressWiget = new addressForm({
 			model: this.shipping,
 			el: this.$addressForm
@@ -200,7 +188,6 @@ var App = BaseView.extend({
 		});
 
 		this.categories.on('option_selected', this.optionSelected, this);
-		this.productDropDown.on('option_selected', this.productSelected, this);
 	},
 
 	optionSelected: function(e) {
