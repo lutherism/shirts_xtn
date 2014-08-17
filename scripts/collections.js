@@ -16,6 +16,7 @@
 
 	var Products = BaseCollection.extend({
 		model: Product,
+		comparator: 'available',
 
 		url: function() {
 			return globalApi + "/products/"

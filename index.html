@@ -28,32 +28,85 @@
 			<a value="{{model.value}}">{{model.label}}</a>
 		</div>
 		<div id="ProductModelView">
-			<div class="tile">
-				<div class="thumbnail">
+			<div class="tile cube">
+				<div class="thumbnail flippety">
 					<img src={{product.image.url}}>
-					<small>{{product.name}}</small><br>
-					<small>{{product.style}}</small>
-					<i class="pull-right fa fa-info-circle"></i>
-					<i class="pull-right text-success fa fa-check-circle"></i>
+					<small>{{product.name}}</small>
+					<i class="pull-right text-success fa fa-check-circle">&nbspIn Stock.</i>
 				</div>
-				<div class="panel panel-default">
+				<div class="panel panel-default flop">
 					<div class="panel-heading clearfix">
 						<h4 class="panel-title">
 							{{product.name}}
-							<i class="pull-right fa fa-share"></i>
 						</h4>
 					</div>
 					<div class="panel-body">
 						<dl>
-							<dt><label>Available</label></dt>
-							<dd>{{product.available}}</dd>
-							<dt><label>Comments</label></dt>
-							<dd>{{product.comments}}</dd>
-							<dt><label>Description</label></dt>
+							{{#if product.colors}}
+							<dt><label>Pick Your Color:</label></dt>
+							<dd>
+								{{#each product.colors}}
+								<i class="fa fa-3x fa-circle" data-color="{{@index}}" style="color:{{this.hex}}"></i>
+								{{/each}}
+							</dd>
+							{{else}}
+							<dt><label>Sorry, this item is unavailable.</label></dt>
+							{{/if}}<br>
+							<dt><label>Comments:</label></dt>
+							<dd>{{product.comments}}</dd><br>
+							<dt><label>Description:</label></dt>
 							<dd>{{product.description}}</dd>
-							<dt><label>Type</label></dt>
-							<dd>{{product.type}}</dd>
 						</dl>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="SelectedProductView">
+			<div class="tile">
+				<div class="panel panel-default">
+					<div class="panel-heading clearfix">
+						<h4 class="panel-title">
+							You Selected: {{product.name}}
+						</h4>
+					</div>
+					<div class="panel-body">
+						<div class="thumbnail ">
+							<div class="row">
+							{{#each product.selectedColor.images}}
+								<div class="col-md-3">
+									<img style="width:100%" src="{{this.url}}">
+								</div>
+							{{/each}}
+							</div>
+							<small>{{product.name}}</small>
+							<small>{{product.selectedColor.name}}</small>
+							<i class="pull-right text-success fa fa-check-circle">&nbspIn Stock.</i>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<dl>
+									<dt><label>Comments:</label></dt>
+									<dd>{{product.comments}}</dd><br>
+									<dt><label>Description:</label></dt>
+									<dd>{{product.description}}</dd>
+								</dl>
+							</div>
+							<div class="col-md-6">
+								<dl>
+									{{#if product.colors}}
+									<dt><label>Change your Color:</label></dt>
+									<dd>
+										{{#each product.colors}}
+											<i class="fa fa-3x fa-circle" style="color:{{this.hex}}"></i>
+										{{/each}}
+									</dd>
+									{{/if}}<br>
+									<dt><label>Size:</label></dt>
+									<dd><select></select></dd><br>
+								</dl>
+								<button class="btn-xl btn btn-block btn-success">Buy Now</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -62,8 +115,8 @@
 			<h1>ClickShirt</h1>
 			<div class="category-pills"></div>
 			<div class="image-container"></div>
+			<div class="product-selection"></div>
 			<div class="address-form"></div>
-			<button class="btn btn-md btn-success pull-right">Quote</button>
 		</div>
 		<div id="dropDown">
 			<h2></h2>

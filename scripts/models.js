@@ -68,6 +68,23 @@
 		}
 	});
 
+	var ProductOrder =  BaseModel.extend({
+		idAttribute: 'id',
+		defaults: {
+			size: "",
+			colors: [],
+			color: "",
+			selectedColor: {},
+			additionalImages: [],
+			image: {},
+			quantity: 0,
+			id: ""
+		},
+		url: function() {
+			return globalApi + "/products/" + this.id;
+		}
+	});
+
 	var QuoteOrder = BaseModel.extend({
 		defaults: {
 			type: "",

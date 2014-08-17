@@ -101,11 +101,11 @@ var addressForm = BaseView.extend({
 var Thumbnail = BaseView.extend({
 	className:"col-xs-6 col-md-3 productModel",
 	events: {
-		'click i': 'toggleInfo'
+		'click .fa-circle': 'pickColor'
 	},
 	bindings: {
-		'.thumbnail': 'toggle:not(info)',
-		'.panel': 'toggle:info',
+		//'.thumbnail': 'toggle:not(info)',
+		//'.panel': 'toggle:info',
 		'.fa-check-circle': 'toggle:available'
 	},
 	initialize: function(options) {
@@ -131,7 +131,16 @@ var Thumbnail = BaseView.extend({
 	},
 	toggleInfo: function() {
 		this.viewModel.set('info', !this.viewModel.get('info'));
-		//this.render();
+	},
+	pickColor: function(e) {
+		var product = this.model.toJSON();
+		var color = this.model.get('colors')[$(e.currentTarget).data('color')];
+		this.model.collection.trigger('option_selected', _.extend(product, {
+				selectedColor: color,
+				color: color.name,
+				sizes: color.sizes
+			})
+		);
 	}
 });
 
@@ -140,6 +149,20 @@ var ImageArray = BaseView.extend({
 	render: function() {
 		this.$el.html(templates.ImageContainer());
 		ImageArray.__super__.render.apply(this);
+	}
+});
+
+var SelectedProduct = BaseView.extend({
+	bindings: {
+		'select': 'options:sizes'
+	},
+	render: function() {
+		this.$el.html(templates.SelectedProductView({
+			product: this.model.toJSON({
+				computed: true
+			})
+		}));
+		SelectedProduct.__super__.render.apply(this, arguments);
 	}
 });
 
@@ -166,6 +189,7 @@ var App = BaseView.extend({
 		this.$catagorySelect = this.$el.find('.category-pills');
 		this.$addressForm = this.$el.find('.address-form');
 		this.$images = this.$el.find('.image-container');
+		this.$selection = this.$el.find('.product-selection');
 		this.buildSubviews();
 		App.__super__.render.apply(this, arguments);
 	},
@@ -181,14 +205,20 @@ var App = BaseView.extend({
 			model: this.shipping,
 			el: this.$addressForm
 		});
-		this.addressWiget.render();
+		//this.addressWiget.render();
 
 		this.imageArray = new ImageArray({
 			collection: this.products,
 			el: this.$images
 		});
 
+		this.productSelection = new SelectedProduct({
+			collection: this.products,
+			el: this.$selection
+		});
+
 		this.categories.on('option_selected', this.optionSelected, this);
+		this.products.on('option_selected', this.productSelected, this);
 	},
 
 	optionSelected: function(e) {
@@ -205,8 +235,9 @@ var App = BaseView.extend({
 	},
 
 	productSelected: function(e) {
-		this.prodSelection = this.products.get(e);
-		this.viewModel.set('img', this.prodSelection.get('image').url);
+		this.prodSelection = new ProductOrder(e);
+		this.productSelection.model = this.prodSelection;
+		this.productSelection.render();
 	},
 	handleQuote: function(e) {
 		var data = {};
