@@ -2,20 +2,32 @@
 var catagoryFull = new Catagories();
 var productFull = new Products();
 var ourShipping = new Address();
-var app = window.app = new App({
+var ourDesign = new Design();
+var shop = window.shop = new Shop({
 	el: $('.app'),
 	categories: catagoryFull,
 	products: productFull,
-	shipping: ourShipping
+	shipping: ourShipping,
+	design: ourDesign
 });
+/*var designManager = window.designManager = new ProfileManager({
+	model: ourDesign
+});*/
 
 catagoryFull.fetch({
 	success: _.bind(function() {
 		//Pre-select Ladies Short Sleve
-		window.app.optionSelected('ladies-short-sleeve');
+		window.shop.optionSelected('ladies-short-sleeve');
 		$('a[value="ladies-short-sleeve"]').parent().addClass('active');
-	})
+	}, this)
 });
-app.render()
+shop.render();
+
+function receiveMessage(event)
+{
+  shop.sendQuote(event)
+}
+
+window.addEventListener("message", _.bind(receiveMessage, this), false);
 
 })();

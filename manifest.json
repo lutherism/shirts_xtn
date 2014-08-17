@@ -3,18 +3,34 @@
 
   "name": "Click Shirt",
   "description": "Buy shirts a shirt printed with any image on the internet. With one click",
-  "version": "0.0.1",
+  "version": "0.0.2",
 
   "browser_action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": "t-shirt_silver.png"
   },
   "permissions": [
-		"<all_urls>"
+    "contextMenus",
+    "<all_urls>",
+    "windows"
   ],
-
-  "optional_permissions": [ "<all_urls>", "https://api.scalablepress.com/v2" ],
+  "background": {
+    "scripts": ["scripts/menu.js"]
+  },
   "sandbox": {
-     "pages": ["index.html"]
-  }
+     "pages": ["index.html", "scripts/menu.js"]
+  },
+  "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "scripts/modal.js"
+            ]
+        }
+    ],
+  "icons": { "16": "t-shirt.png",
+           "48": "t-shirt_silver.png"
+          }
 }
-    

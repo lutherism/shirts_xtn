@@ -141,6 +141,9 @@ var Thumbnail = BaseView.extend({
 				sizes: color.sizes
 			})
 		);
+		$('html, body').animate({
+		   scrollTop: $('.product-selection').offset().top
+		}, 'slow');
 	}
 });
 
@@ -153,8 +156,15 @@ var ImageArray = BaseView.extend({
 });
 
 var SelectedProduct = BaseView.extend({
+	className: 'selectedProduct',
 	bindings: {
-		'select': 'options:sizes'
+		'.size-select': 'options:sizes',
+		'.qty-select': 'options:[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], optionsDefault:{label:"1"}',
+		'.artwork-input': 'value:Artwork'
+	},
+	events: {
+		'click .close': 'closeButton',
+		'click .fa-circle': 'pickColor'
 	},
 	render: function() {
 		this.$el.html(templates.SelectedProductView({
@@ -162,13 +172,31 @@ var SelectedProduct = BaseView.extend({
 				computed: true
 			})
 		}));
+		this.$el.show();
 		SelectedProduct.__super__.render.apply(this, arguments);
+	},
+	closeButton: function() {
+		this.model.destroy();
+		this.$el.hide();
+	},
+	pickColor: function(e) {
+		var product = this.model.toJSON();
+		var color = this.model.get('colors')[$(e.currentTarget).data('color')];
+		this.collection.trigger('option_selected', _.extend(product, {
+				selectedColor: color,
+				color: color.name,
+				sizes: color.sizes
+			})
+		);
+		$('html, body').animate({
+		   scrollTop: $('.product-selection').offset().top
+		}, 'slow');
 	}
 });
 
-var App = BaseView.extend({
+var Shop = BaseView.extend({
 	events: {
-		'click button': 'handleQuote'
+		'click .btn-save': 'handleQuote'
 	},
 	bindings: {
 		'img': 'attr:{"src":img}'
@@ -181,7 +209,7 @@ var App = BaseView.extend({
 		this.viewModel = new BaseModel({
 			img:""
 		});
-		App.__super__.initialize.apply(this. arguments);
+		Shop.__super__.initialize.apply(this. arguments);
 	},
 
 	render: function() {
@@ -191,7 +219,7 @@ var App = BaseView.extend({
 		this.$images = this.$el.find('.image-container');
 		this.$selection = this.$el.find('.product-selection');
 		this.buildSubviews();
-		App.__super__.render.apply(this, arguments);
+		Shop.__super__.render.apply(this, arguments);
 	},
 
 	buildSubviews: function (){
@@ -205,7 +233,7 @@ var App = BaseView.extend({
 			model: this.shipping,
 			el: this.$addressForm
 		});
-		//this.addressWiget.render();
+		this.addressWiget.render();
 
 		this.imageArray = new ImageArray({
 			collection: this.products,
@@ -219,6 +247,7 @@ var App = BaseView.extend({
 
 		this.categories.on('option_selected', this.optionSelected, this);
 		this.products.on('option_selected', this.productSelected, this);
+		this.on('sendQuote', this.sendQuote, this);
 	},
 
 	optionSelected: function(e) {
@@ -239,24 +268,36 @@ var App = BaseView.extend({
 		this.productSelection.model = this.prodSelection;
 		this.productSelection.render();
 	},
-	handleQuote: function(e) {
+	handleQuote: function() {
 		var data = {};
 		data.products = [this.prodSelection.toJSON()];
-		data.address = this.shipping.toJSON();
+		data = _.extend({}, data, _.pick(this.shipping.toJSON(),
+			['address1',
+			 'address2',
+			 'name',
+			 'country',
+			 'zip',
+			 'state', 
+			 'city']));
 		data.type = 'dtg';
 		data.sides = {front:1};
-		data.design = "53ed3a23b3730f0e27a66513";
+		data.placeOrder = 1;
+		data.Artwork = "http://google.com/default.png";
 
-		$.ajax({
-			type: 'POST',
-			data: data,
-			url: globalApi + '/quote',
-			success: _.bind(function(data){
-				alert(JSON.stringify(data));
-			}, this),
-			headers :{
-				"Authorization": "Basic " + btoa(":" + SPToken)
-			}
-		});
+		this.quote = _.extend({}, data);
+	},
+	sendQuote: function(link) {
+		var link = link.data;
+		if (link.srcUrl) {
+			this.quote.Artwork = link.srcUrl;
+			$.ajax({
+				type: 'POST',
+				data: this.quote,
+				url: postApi,
+				success: _.bind(function(data){
+					alert(JSON.stringify(data));
+				}, this)
+			});
+		}
 	}
 });

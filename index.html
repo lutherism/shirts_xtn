@@ -10,9 +10,15 @@
 		<link rel="stylesheet" type="text/css" href="./vendor/bootstrap.min.css"></link>
 		<link rel="stylesheet" href="./scripts/font-awesome.css">
 		<script src="./vendor/handlebars.js" type="text/javascript"></script>
+		<link rel="icon" 
+	      type="image/png" 
+	      href="./t-shirt.png">
+	      <title>ClickShirt</title>
 	</head>
 	<body class="container">
-		<div class="app"><h1>Loading...</h1></div>
+		<div class="app"><div class="navbar"><h1>Click Shirt</h1></div>
+		<h1>Loading...</h1>
+	</div>
 	</body>
 
 	<div id="templates" style="display:none">
@@ -62,51 +68,46 @@
 			</div>
 		</div>
 		<div id="SelectedProductView">
-			<div class="tile">
-				<div class="panel panel-default">
-					<div class="panel-heading clearfix">
-						<h4 class="panel-title">
-							You Selected: {{product.name}}
-						</h4>
+			<div class="panel-heading clearfix">
+				<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="text-success">
+					You Selected {{product.name}}!
+				</h4>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+				{{#each product.selectedColor.images}}
+					<div class="col-md-3">
+						<img style="width:100%" src="{{this.url}}">
 					</div>
-					<div class="panel-body">
-						<div class="thumbnail ">
-							<div class="row">
-							{{#each product.selectedColor.images}}
-								<div class="col-md-3">
-									<img style="width:100%" src="{{this.url}}">
-								</div>
-							{{/each}}
-							</div>
-							<small>{{product.name}}</small>
-							<small>{{product.selectedColor.name}}</small>
-							<i class="pull-right text-success fa fa-check-circle">&nbspIn Stock.</i>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<dl>
-									<dt><label>Comments:</label></dt>
-									<dd>{{product.comments}}</dd><br>
-									<dt><label>Description:</label></dt>
-									<dd>{{product.description}}</dd>
-								</dl>
-							</div>
-							<div class="col-md-6">
-								<dl>
-									{{#if product.colors}}
-									<dt><label>Change your Color:</label></dt>
-									<dd>
-										{{#each product.colors}}
-											<i class="fa fa-3x fa-circle" style="color:{{this.hex}}"></i>
-										{{/each}}
-									</dd>
-									{{/if}}<br>
-									<dt><label>Size:</label></dt>
-									<dd><select></select></dd><br>
-								</dl>
-								<button class="btn-xl btn btn-block btn-success">Buy Now</button>
-							</div>
-						</div>
+				{{/each}}
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<dl>
+							<dt><label>Description:</label></dt>
+							<dd>{{product.description}}</dd>
+							<dt><label>Comments:</label></dt>
+							<dd>{{product.comments}}</dd><br>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						<dl>
+							{{#if product.colors}}
+							<dt><label>Change your Color:</label></dt>
+							<dd>
+								{{#each product.colors}}
+									<i class="fa fa-3x fa-circle" data-color="{{@index}}" style="color:{{this.hex}}"></i>
+								{{/each}}
+							</dd>
+							{{/if}}<br>
+							<dt><label>Artwork:</label></dt>
+							<dd><input placeholder="URL" type="text" class="artwork-input form-control"></dd><br>
+							<dt><label>Size:</label></dt>
+							<dd><select class="size-select"></select></dd><br>
+							<dt><label>Qty:</label></dt>
+							<dd><select class="qty-select"></select></dd><br>
+						</dl>
 					</div>
 				</div>
 			</div>
@@ -117,6 +118,7 @@
 			<div class="image-container"></div>
 			<div class="product-selection"></div>
 			<div class="address-form"></div>
+			<button class="btn btn-default btn-save">Save</button>
 		</div>
 		<div id="dropDown">
 			<h2></h2>
@@ -160,6 +162,16 @@
 							<label>Country</label><div class="address address-country"><input type="text" placeholder="Country"></div>
 							</div>
 						</div>
+						<form action="" method="POST">
+						  <script
+						    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+						    data-key="pk_test_o9NdgV5GvgumhHsqmOlPe21d"
+						    data-amount="2000"
+						    data-name="Demo Site"
+						    data-description="2 widgets ($20.00)"
+						    >
+						  </script>
+						</form>
 					</form>
 				</div>
 			</div>

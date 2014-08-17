@@ -14,6 +14,15 @@
 		}
 	});
 
+	var Designs = BaseCollection.extend({
+		model:Design,
+		comparator: 'createdAt',
+
+		url: function() {
+			return globalApi + ""
+		}
+	});
+
 	var Products = BaseCollection.extend({
 		model: Product,
 		comparator: 'available',

@@ -47,7 +47,8 @@
 			image: {},
 			available: true,
 			url: "",
-			productId: ""
+			productId: "",
+			Artwork: ""
 		},
 		computeds: {
 			label: {
@@ -119,14 +120,14 @@
 
 	var Address = BaseModel.extend({
 		defaults: {
-			name: "",
-			company: "",
-			address1: "",
+			name: "Alex Jansen",
+			company: "Showvine",
+			address1: "2145 Alameda Diablo",
 			address2: "",
-			city: "",
-			state: "",
-			zip: 0,
-			country: ""
+			city: "Diablo",
+			state: "CA",
+			zip: 94528,
+			country: "USA"
 		}
 	});
 
@@ -139,14 +140,6 @@
 			orderToken: "",
 			statusCode: 0,
 			mode: ""
-		}
-	});
-
-	var Error = BaseModel.extend({
-		defaults: {
-			code: "",
-			path: "",
-			message: ""
 		}
 	});
 
@@ -190,6 +183,6 @@
 			mode: ""
 		},
 		url: function() {
-			return globalApi + "/design/" + this.id;
+			return "http://api.fb.dev.metv.bz/sio";
 		}
 	});
