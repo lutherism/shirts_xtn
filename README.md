@@ -1,4 +1,4 @@
-sp-backbone
+shirts_xtn
 ===========
 
-Basic Backbone Models and Collections that matchup with Selectable Press's API
+Chrome Extension for buying custom printed shirts by right clicking images
