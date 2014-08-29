@@ -120,14 +120,15 @@
 
 	var Address = BaseModel.extend({
 		defaults: {
-			name: "Alex Jansen",
-			company: "Showvine",
-			address1: "2145 Alameda Diablo",
+			email: "",
+			name: "",
+			company: "",
+			address1: "",
 			address2: "",
-			city: "Diablo",
-			state: "CA",
-			zip: 94528,
-			country: "USA"
+			city: "",
+			state: "",
+			zip: 0,
+			country: "US"
 		}
 	});
 

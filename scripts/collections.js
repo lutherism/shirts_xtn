@@ -1,3 +1,4 @@
+	require("./models.js");
 	var BaseCollection = Backbone.Collection.extend({
 		model: BaseModel,
 		initialize: function(options) {

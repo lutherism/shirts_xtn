@@ -1,3 +1,147 @@
+var BaseModel = require('./models/BaseModel');
+Backbone.Epoxy.binding.addHandler('validate', {
+		init: function ($boundEl, params, bindings, context) {
+			this.validations = params.validations;
+
+			for (var i = 0; i < this.validations.length; i++) {
+				this.validations[i].id = _.uniqueId(this.validations[i].type);
+			}
+
+			this.$validationContainer = $boundEl.closest('.form-group');
+		},
+
+		get: function ($boundEl, value, evt) {
+
+		},
+
+		set: function ($boundEl, params) {
+			for (var i = 0; i < this.validations.length; i++) {
+				var type = this.validations[i].type;
+				var validationParams = this.validations[i].params;
+				var id = this.validations[i].id;
+
+				var result = this['validate_' + type](params.value, validationParams);
+
+				if (result === true) {
+					this.clearFailedValidations(id);
+				} else {
+					var severity = 'danger';
+
+					if (typeof result === 'object') {
+						severity = result.severity;
+						result = result.message;
+					}
+					this.clearFailedValidations(id);
+					this.addFailedValidation(result, id, severity);
+				}
+			}
+		},
+
+		addFailedValidation: function (result, id, severity) {
+			var existingError = this.getValidationError(id, severity);
+
+			if (!existingError || !existingError.length) {
+				if (severity === 'danger' || severity === 'error') {
+					this.$validationContainer.addClass('has-error');
+				}
+			}
+		},
+
+		clearFailedValidations: function (id) {
+			this.getValidationError(id).remove();
+
+			// If there are no more validation messages, remove the error class
+			if (0 === this.$validationContainer.find('.validation-message').length) {
+				this.$validationContainer.removeClass('has-error');
+			}
+		},
+
+		getValidationError: function (id, severity) {
+			var query = '[data-id=' + id + ']';
+
+			if (severity) {
+				query += '[data-severity=' + severity + ']';
+			}
+
+			return this.$validationContainer.find(query);
+		},
+
+		validate_number: function (value, validationParams) {
+			var result = true;
+
+			if (value === null || value === undefined) {
+				value = 0;
+			}
+
+			if (validationParams.max !== undefined && validationParams.max < value) {
+				return 'Max ' + validationParams.max;
+			}
+
+			if (validationParams.min !== undefined && value < validationParams.min) {
+				return 'Min ' + validationParams.min;
+			}
+
+			return result;
+		},
+
+		validate_length: function (value, validationParams) {
+			var result = true;
+
+			if (value === null || value === undefined) {
+				value = '';
+			}
+
+			if (validationParams.max !== undefined) {
+				if (validationParams.max < value.length) {
+					return {
+						message: 'Max length: ' + validationParams.max + ' (Currently: ' + value.length + ')',
+						severity: validationParams.severity || 'error'
+					};
+				} else if (validationParams.min !== undefined && value.length < validationParams.min) {
+					return {
+						message: 'Min length: ' + validationParams.min + ' (Currently: ' + value.length + ')',
+						severity: validationParams.severity || 'error'
+					};
+				} else {
+					return {
+						severity: 'info',
+						message: 'Remaining: ' + (validationParams.max - value.length)
+					};
+				}
+			}
+
+
+			return result;
+		},
+
+		validate_regexMatch: function (value, validationParams) {
+			var result = true;
+
+			if (value === null || value === undefined) {
+				value = '';
+			}
+
+			if (typeof validationParams.pass === 'string') {
+				validationParams.pass = new RegExp(validationParams.pass, 'g');
+			}
+
+			if (typeof validationParams.fail === 'string') {
+				validationParams.fail = new RegExp(validationParams.fail, 'g');
+			}
+
+			var passMatches = value.match(validationParams.pass);
+			var failMatches = value.match(validationParams.fail);
+
+			if (validationParams.pass && passMatches !== null && 0 === passMatches.length) {
+				return validationParams.message || 'No matches for ' + validationParams.pass;
+			} else if (validationParams.fail && failMatches !== null && 0 < failMatches.length) {
+				return validationParams.message || 'Matched ' + validationParams.fail;
+			}
+
+			return result;
+		}
+	});
+
 var BaseView = Backbone.Epoxy.View.extend({
 	initialize: function(options) {
 		this.options = options || {};
@@ -53,6 +197,7 @@ var PillView = BaseView.extend({
 	initialize: function(options) {
 		PillView.__super__.initialize.apply(this, arguments);
 		this.render();
+		this.model.on('sync', this.render, this);
 	},
 	render: function() {
 		this.$el.html(templates.Pill({
@@ -79,22 +224,106 @@ var PillListView = BaseView.extend({
 })
 var addressForm = BaseView.extend({
 	bindings: {
+		'.address-email input': 'value:email',
 		'.address-name input': 'value:name',
 		'.address-company input': 'value:company',
-		'.address-address1 textarea': 'value:address1',
+		'.address-address1 input': 'value:address1',
 		'.address-address2 input': 'value:address2',
 		'.address-city input': 'value:city',
 		'.address-state input': 'value:state',
 		'.address-zip input': 'value:zip',
-		'.address-country input': 'value:country',
 		'label': 'classes:{"col-xs-2": true, "control-label":true}',
 		'div.address': 'classes:{"col-xs-10": true}',
 		'div.address input': 'classes:{"form-control":true}'
-	},	
+	},
+	validation: {
+		'.address-email input': {
+			value: 'email',
+			validations: [{
+				type: 'length',
+				params: {
+					min: 1,
+					max:100
+				}
+			}]
+		},
+		'.address-name input': {
+			value: 'name',
+			validations: [{
+				type: 'length',
+				params: {
+					min: 1,
+					max:100,
+					severity: 'error'
+				}
+			}]
+		},
+		'.address-address1 input': {
+			value: 'address1',
+			validations: [{
+				type: 'length',
+				params: {
+					min: 5,
+					max:100,
+					severity: 'error'
+				}
+			}]
+		},
+		'.address-city input': {
+			value: 'city',
+			validations: [{
+				type: 'length',
+				params: {
+					min:1,
+					max:100
+				}
+			}]
+		},
+		'.address-state input': {
+			value: 'state',
+			validations: [{
+				type: 'length',
+				params: {
+					min: 1,
+					max:100
+				}
+			}]
+		},
+		'.address-zip input': {
+			value: 'zip',
+			validations: [{
+				type: 'length',
+				params: {
+					min: 1,
+					max:100
+				}
+			}]
+		}
+	},
 	render: function() {
 		this.$el.html(templates.address());
 		addressForm.__super__.render.apply(this, arguments);
+		this.applyValidation();
 		return this;
+	},
+	applyValidation: function () {
+		if (!this.validation) {
+			return;
+		}
+
+		var keys = _.keys(this.validation);
+
+		for (var i = 0; i < keys.length; i++) {
+			var key = keys[i];
+			var binding = this.bindings[key] ? this.bindings[key] + ',' : '';
+			var curr = this.validation[key];
+
+			binding += 'validate:{value: ' + curr.value + ', validations: ' + JSON.stringify(curr.validations) + '}';
+
+			this.bindings[key] = binding;
+		}
+
+		this.applyBindings();
 	}
 });
 
@@ -159,12 +388,13 @@ var SelectedProduct = BaseView.extend({
 	className: 'selectedProduct',
 	bindings: {
 		'.size-select': 'options:sizes',
-		'.qty-select': 'options:[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], optionsDefault:{label:"1"}',
-		'.artwork-input': 'value:Artwork'
+		'.qty-select': 'options:[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], optionsDefault:1'
 	},
 	events: {
 		'click .close': 'closeButton',
-		'click .fa-circle': 'pickColor'
+		'click .fa-circle': 'pickColor',
+		'change .size-select': 'sizeSelect',
+		'change .qty-select': 'qtySelect'
 	},
 	render: function() {
 		this.$el.html(templates.SelectedProductView({
@@ -191,6 +421,14 @@ var SelectedProduct = BaseView.extend({
 		$('html, body').animate({
 		   scrollTop: $('.product-selection').offset().top
 		}, 'slow');
+	},
+	sizeSelect: function(e) {
+		var size = $(e.currentTarget).val();
+		this.model.set('size', size);
+	},
+	qtySelect: function(e) {
+		var qty = $(e.currentTarget).val();
+		this.model.set('quantity', qty);
 	}
 });
 
@@ -206,6 +444,7 @@ var Shop = BaseView.extend({
 		this.categories = this.options.categories;
 		this.products = this.options.products;
 		this.shipping = this.options.shipping;
+		this.prodSelection = this.options.selection;
 		this.viewModel = new BaseModel({
 			img:""
 		});
@@ -264,14 +503,18 @@ var Shop = BaseView.extend({
 	},
 
 	productSelected: function(e) {
-		this.prodSelection = new ProductOrder(e);
+		this.prodSelection.set(e);
 		this.productSelection.model = this.prodSelection;
 		this.productSelection.render();
 	},
 	handleQuote: function() {
-		var data = {};
-		data.products = [this.prodSelection.toJSON()];
-		data = _.extend({}, data, _.pick(this.shipping.toJSON(),
+		var order = _.extend({}, _.pick(this.prodSelection.toJSON(), 
+			['productId',
+			'color',
+			'size',
+			'quantity',
+			'selectedColor']));
+		order = _.extend({}, order, _.pick(this.shipping.toJSON(),
 			['address1',
 			 'address2',
 			 'name',
@@ -279,12 +522,18 @@ var Shop = BaseView.extend({
 			 'zip',
 			 'state', 
 			 'city']));
-		data.type = 'dtg';
-		data.sides = {front:1};
-		data.placeOrder = 1;
-		data.Artwork = "http://google.com/default.png";
+		order.type = 'dtg';
+		order.sides = {front:1};
+		order.placeOrder = 1;
+		order.width = 12;
+		order.artwork = "http://google.com/default.png";
+		order.productImage = this.prodSelection.get('image').url;
 
-		this.quote = _.extend({}, data);
+		this.quote = _.extend({}, order);
+		// Save it using the Chrome extension storage API.
+		chrome.storage.sync.set({clickShirtData: order}, _.bind(function() {
+			this.viewModel.set('saving_user', false);
+		}, this));
 	},
 	sendQuote: function(link) {
 		var link = link.data;

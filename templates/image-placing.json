@@ -1,0 +1,12 @@
+{
+	"default": {
+		"sample_style": "position:absolute; margin:70px 0px 0px 103px; width:125px; clip:rect(0px 120px 180px 0px)",
+		"image_style": "position:static; width:100%",
+		"container_style": "minheight:350px; width:325px; margin-top:-200px; background-color:#ccc; border:1px solid #bbb; border-radius:3px; padding:3px; position:fixed; top:50%; right:10%; z-index: 9999999"
+	},
+	"american-apparel-50-50-t-shirt": {
+		"sample_style": "position:absolute; margin:70px 0px 0px 103px; width:120px; clip: rect(0px 120px 180px 0px)",
+		"image_style": "position:static; width:100%",
+		"container_style": "minheight:350px; width:325px; margin-top:-200px; background-color:#ccc; border:1px solid #bbb; border-radius:3px; padding:3px; position:fixed; top:50%; right:10%; z-index: 9999999"
+	}
+}

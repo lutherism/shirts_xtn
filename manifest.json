@@ -2,35 +2,43 @@
   "manifest_version": 2,
 
   "name": "Click Shirt",
-  "description": "Buy shirts a shirt printed with any image on the internet. With one click",
-  "version": "0.0.2",
-
+  "description": "Right click any image to buy it printed on shirt for $25. Free shipping.",
+  "version": "0.1.4",
   "browser_action": {
     "default_popup": "index.html",
-    "default_icon": "t-shirt_silver.png"
+    "default_icon": "ClickShirtLogo_48sq.png"
   },
   "permissions": [
     "contextMenus",
     "<all_urls>",
-    "windows"
+    "windows",
+    "storage",
+    "tabs"
   ],
   "background": {
-    "scripts": ["scripts/menu.js"]
+    "scripts": [
+      "./vendor/jquery.js",
+       "./vendor/underscore-min.js",
+      "scripts/menu.js"]
   },
-  "sandbox": {
-     "pages": ["index.html", "scripts/menu.js"]
-  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; script-src 'self' https://ssl.google-analytics.com;  object-src 'self'",
   "content_scripts": [
         {
             "matches": [
                 "<all_urls>"
             ],
             "js": [
-                "scripts/modal.js"
+              "./vendor/jquery.js",
+              "./vendor/underscore-min.js",
+               "./vendor/checkout.js",
+                "./scripts/modal.js"
             ]
         }
     ],
-  "icons": { "16": "t-shirt.png",
-           "48": "t-shirt_silver.png"
-          }
+  "icons": { "16": "ClickShirtLogo_16sq.png",
+           "48": "ClickShirtLogo_48sq.png"
+          },
+  "web_accessible_resources": [
+    "templates/image-placing.json"
+  ]
 }

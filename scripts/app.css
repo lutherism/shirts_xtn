@@ -25,13 +25,13 @@ body {
 	height:275;
 	overflow:scroll;
 }
-.productModel dl i {
+.productModel dl .fa-circle {
 	-webkit-text-stroke-width: 1px;
    -webkit-text-stroke-color: black;
    transition: transform .2s;
 }
-.productModel dl i:hover {
-	transform: scale(.7, .7);
+.productModel dl .fa-circle:hover {
+	transform: scale(1.2, 1.2);
 }
 .productModel img {
 	max-height:280px;
@@ -40,12 +40,12 @@ body {
 	margin: 5 5 !important;
 	padding: 5 10 !important;
 }
-.product-selection dd i {
+.product-selection dd .fa-circle {
 	-webkit-text-stroke-width: 1px;
    -webkit-text-stroke-color: black;
    transition: transform .2s;
 }
-.product-selection dd i:hover {
+.product-selection dd .fa-circle:hover {
 	transform: scale(.7, .7);
 }
 
